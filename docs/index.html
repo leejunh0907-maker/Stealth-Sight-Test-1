@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Happy Birthday, Buki ✨</title>
+  <meta name="description" content="부키 생일 축하 선물 페이지" />
+  <style>
+    :root{
+      --bg0:#070a18;
+      --bg1:#0b1030;
+      --bg2:#190b2a;
+      --card:rgba(255,255,255,.08);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.70);
+      --border:rgba(255,255,255,.14);
+      --glow1:#ff74d8;
+      --glow2:#7ae9ff;
+      --glow3:#a58bff;
+      --radius:22px;
+      --shadow: 0 24px 80px rgba(0,0,0,.42);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Noto Sans KR", Segoe UI, Roboto, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 18% 15%, rgba(255,116,216,.20), transparent 60%),
+        radial-gradient(850px 520px at 82% 12%, rgba(122,233,255,.16), transparent 60%),
+        radial-gradient(900px 700px at 50% 110%, rgba(165,139,255,.10), transparent 60%),
+        linear-gradient(160deg, var(--bg0), var(--bg2));
+      overflow-x:hidden;
+    }
+    canvas#fx{
+      position:fixed; inset:0;
+      width:100%; height:100%;
+      z-index:-2;
+    }
+    canvas#confetti{
+      position:fixed; inset:0;
+      width:100%; height:100%;
+      pointer-events:none;
+      z-index:50;
+    }
+    .wrap{max-width:1060px;margin:0 auto;padding:22px 18px 80px}
+    .nav{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(12px);
+      background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.06));
+      border-bottom:1px solid rgba(255,255,255,.10);
+    }
+    .navin{
+      max-width:1060px;margin:0 auto;
+      padding:12px 18px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .brand{display:flex;align-items:center;gap:10px;font-weight:850;letter-spacing:-.02em}
+    .orb{
+      width:14px;height:14px;border-radius:999px;
+      background: linear-gradient(135deg, var(--glow1), var(--glow2));
+      box-shadow: 0 0 22px rgba(255,116,216,.55);
+    }
+    .links{display:flex; gap:10px; flex-wrap:wrap}
+    .a{
+      text-decoration:none; color:var(--muted);
+      padding:8px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      transition: .15s transform, .15s opacity;
+      font-weight:700; font-size:13px;
+    }
+    .a:hover{transform: translateY(-1px); opacity:.95; color:var(--text)}
+    .btn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06));
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      box-shadow: 0 12px 36px rgba(0,0,0,.22);
+      font-weight:800;
+      transition:.15s transform, .15s opacity;
+      white-space:nowrap;
+    }
+    .btn:hover{transform: translateY(-1px)}
+    .btn:active{transform: translateY(1px); opacity:.92}
+    .btn.small{padding:8px 10px; border-radius:12px; font-size:13px; font-weight:800}
+    .hero{
+      margin-top:18px;
+      border:1px solid rgba(255,255,255,.14);
+      background:
+        radial-gradient(900px 420px at 20% 10%, rgba(255,116,216,.18), transparent 60%),
+        radial-gradient(800px 420px at 80% 35%, rgba(122,233,255,.14), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+      border-radius: calc(var(--radius) + 10px);
+      box-shadow: var(--shadow);
+      padding:28px 20px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        conic-gradient(from 120deg at 50% 50%,
+          rgba(255,116,216,.16),
+          rgba(122,233,255,.12),
+          rgba(165,139,255,.14),
+          rgba(255,116,216,.16));
+      filter: blur(26px);
+      opacity:.55;
+      pointer-events:none;
+    }
+    .hero > *{position:relative}
+    .kicker{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.14);
+      border-radius:999px;
+      color:var(--muted);
+      font-weight:800; font-size:13px;
+    }
+    .h1{
+      margin:14px 0 8px;
+      font-size: clamp(34px, 5.8vw, 64px);
+      line-height:1.02;
+      letter-spacing:-.03em;
+    }
+    .sub{
+      margin:0;
+      font-size: clamp(14px, 2.2vw, 18px);
+      color:var(--muted);
+      line-height:1.55;
+      max-width:70ch;
+    }
+    .heroRow{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{
+      padding:8px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      color:var(--muted);
+      font-size:13px;
+      font-weight:800;
+    }
+    .grid{display:grid;gap:14px;margin-top:14px;grid-template-columns:1fr}
+    @media (min-width:920px){.grid{grid-template-columns:1.2fr .8fr}}
+    .card{
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
+      border-radius: var(--radius);
+      padding:18px;
+      box-shadow: 0 16px 48px rgba(0,0,0,.24);
+      backdrop-filter: blur(10px);
+    }
+    .title{margin:0 0 10px;letter-spacing:-.01em;font-size:18px;font-weight:900}
+    .muted{color:var(--muted)}
+    .hr{height:1px;background: rgba(255,255,255,.10);margin:12px 0}
+    .count{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:10px}
+    .box{border:1px solid rgba(255,255,255,.14);background: rgba(0,0,0,.12);border-radius:18px;padding:12px;text-align:center}
+    .num{font-size:22px;font-weight:950}
+    .lab{font-size:12px;color:var(--muted);font-weight:800}
+    .metaRow{display:flex;gap:8px;flex-wrap:wrap}
+    .pill{
+      padding:8px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      color:var(--muted);
+      font-size:13px;font-weight:800;
+    }
+    .letter{
+      white-space:pre-wrap;
+      line-height:1.7;
+      padding:14px;
+      border-radius:18px;
+      border:1px dashed rgba(255,255,255,.22);
+      background: rgba(0,0,0,.10);
+      display:none;
+    }
+    .letter.show{display:block}
+    .timeline{display:grid;gap:10px}
+    .titem{border:1px solid rgba(255,255,255,.12);background: rgba(255,255,255,.05);border-radius:18px;padding:12px}
+    .trow{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+    .twhen{font-weight:950}
+    .twhat{color:var(--muted);font-weight:800;font-size:13px}
+    .gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
+    @media (max-width:420px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    .tile{
+      aspect-ratio:1/1;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.14);
+      background:
+        radial-gradient(260px 160px at 30% 20%, rgba(255,116,216,.18), transparent 60%),
+        radial-gradient(240px 170px at 80% 80%, rgba(122,233,255,.14), transparent 60%),
+        rgba(255,255,255,.05);
+      overflow:hidden;
+      cursor:pointer;
+      position:relative;
+    }
+    .tile img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.01);transition:.2s transform}
+    .tile:hover img{transform:scale(1.06)}
+    .modal{
+      position:fixed;inset:0;
+      background: rgba(0,0,0,.62);
+      display:none;
+      align-items:center;justify-content:center;
+      z-index:60;
+      padding:18px;
+    }
+    .modal.show{display:flex}
+    .modalCard{
+      width:min(920px, 100%);
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(10,12,20,.72);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 30px 120px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .modalTop{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:10px;padding:12px 14px;
+      border-bottom:1px solid rgba(255,255,255,.12);
+    }
+    .modalImg{width:100%;max-height:72vh;object-fit:contain;background: rgba(0,0,0,.25);display:block}
+    .foot{margin-top:18px;text-align:center;color:var(--muted);font-size:13px;line-height:1.6}
+  </style>
+</head>
+
+<body>
+  <canvas id="fx"></canvas>
+  <canvas id="confetti"></canvas>
+
+  <header class="nav">
+    <div class="navin">
+      <div class="brand"><span class="orb"></span><span id="brandText">Buki Birthday</span></div>
+      <div class="links">
+        <a class="a" href="#letter">편지</a>
+        <a class="a" href="#timeline">타임라인</a>
+        <a class="a" href="#gallery">갤러리</a>
+        <button class="btn small" id="btnBgm">🎵 BGM</button>
+        <button class="btn small" id="btnParty">🎉 Party</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero" id="top">
+      <div class="kicker" id="kickerText">✨ Special Day • KST</div>
+      <h1 class="h1" id="heroTitle">Happy Birthday, Buki ✨</h1>
+      <p class="sub" id="heroSub">부키의 하루가 반짝이길. 그리고 앞으로도 오래오래 행복했으면 좋겠어.</p>
+
+      <div class="heroRow">
+        <div class="chips">
+          <span class="chip" id="chip1">🎂 Birthday Gift</span>
+          <span class="chip" id="chip2">💗 from Inari</span>
+          <span class="chip" id="chip3">🌌 Shine On</span>
+        </div>
+        <button class="btn" id="btnOpenLetter">🎁 편지 열기</button>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card" aria-label="countdown">
+        <h2 class="title">⏳ 생일까지 카운트다운</h2>
+        <div class="metaRow">
+          <span class="pill" id="dateLabel">Target: YYYY-MM-DD</span>
+          <span class="pill" id="tzLabel">Timezone: Asia/Seoul</span>
+        </div>
+        <div class="count" aria-live="polite">
+          <div class="box"><div class="num" id="d">0</div><div class="lab">Days</div></div>
+          <div class="box"><div class="num" id="h">0</div><div class="lab">Hours</div></div>
+          <div class="box"><div class="num" id="m">0</div><div class="lab">Minutes</div></div>
+          <div class="box"><div class="num" id="s">0</div><div class="lab">Seconds</div></div>
+        </div>
+        <div class="hr"></div>
+        <div class="muted" style="font-weight:800;font-size:13px">
+          * 생일이 되면 자동으로 편지가 열리고 Party 효과가 실행돼.
+        </div>
+      </section>
+
+      <section class="card" id="letter">
+        <h2 class="title">💌 편지</h2>
+        <p class="muted" style="margin:0 0 10px;font-weight:800">
+          버튼을 눌러 편지를 열어줘. (생일이 되면 자동으로 열림)
+        </p>
+        <div class="letter" id="letterBox"></div>
+        <div class="hr"></div>
+        <div class="muted" id="signatureText" style="font-weight:900">— from. Inari 💗</div>
+      </section>
+    </div>
+
+    <section class="card" id="timeline" style="margin-top:14px">
+      <h2 class="title">🗓️ 타임라인</h2>
+      <div class="timeline" id="timelineBox"></div>
+    </section>
+
+    <section class="card" id="gallery" style="margin-top:14px">
+      <h2 class="title">🖼️ 갤러리</h2>
+      <p class="muted" style="margin:0 0 8px;font-weight:800">사진을 누르면 크게 볼 수 있어. (ESC로 닫기)</p>
+      <div class="gallery" id="galleryBox"></div>
+      <div class="hr"></div>
+      <div class="muted" style="font-weight:800;font-size:13px">
+        같은 폴더에 <code>img/1.jpg</code> ~ <code>img/6.jpg</code> 넣으면 자동 로드돼.
+      </div>
+    </section>
+
+    <div class="foot" id="easterHint">
+      🔒 이스터에그: 키보드로 <b>BUKI</b> 를 입력해봐
+    </div>
+  </main>
+
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="image viewer">
+    <div class="modalCard">
+      <div class="modalTop">
+        <div class="muted" style="font-weight:900" id="modalTitle">Gallery</div>
+        <button class="btn small" id="modalClose">닫기 (ESC)</button>
+      </div>
+      <img class="modalImg" id="modalImg" alt="selected image" />
+    </div>
+  </div>
+
+<script>
+  const CONFIG = {
+    targetDate: "2026-01-01T00:00:00+09:00", // <-- 여기 생일 날짜로 변경
+    signature: "— from. Inari 💗",
+    letter: [
+      "부키 생일 정말 축하해! 🎉",
+      "",
+      "부키의 말과 노래가 많은 날들을 버티게 해줬어.",
+      "항상 최선을 다해주는 모습이 너무 멋지고, 그 마음이 전해져서 고마워.",
+      "",
+      "오늘은 행복만 잔뜩 챙겨가고, 올해는 부키가 원하는 것들이 차근차근 이뤄지길 바랄게.",
+      "",
+      "앞으로도 응원할게. 언제나 반짝여줘 ✨"
+    ].join("\\n"),
+    timeline: [
+      { when: "오늘", what: "생일 케이크 + 파티 효과 + 편지 공개" },
+      { when: "이번 달", what: "고마운 점 3가지 더 적어보기" },
+      { when: "올해", what: "부키가 하고 싶은 것들, 다 이뤄지기" },
+    ],
+    galleryCount: 6,
+    galleryPath: (i) => `img/${i}.jpg`,
+    bgmFile: "bgm.mp3"
+  };
+
+  const $ = (q) => document.querySelector(q);
+  const target = new Date(CONFIG.targetDate).getTime();
+
+  $("#dateLabel").textContent = "Target: " + CONFIG.targetDate.replace("T"," ").replace("+09:00"," (KST)");
+  $("#signatureText").textContent = CONFIG.signature;
+  $("#letterBox").textContent = CONFIG.letter;
+
+  // Countdown
+  function tick(){
+    const now = Date.now();
+    const diff = Math.max(0, target - now);
+    const sec = Math.floor(diff/1000);
+    $("#d").textContent = Math.floor(sec / (3600*24));
+    $("#h").textContent = Math.floor((sec % (3600*24)) / 3600);
+    $("#m").textContent = Math.floor((sec % 3600) / 60);
+    $("#s").textContent = sec % 60;
+
+    if(target - now <= 0 && !window.__done){
+      window.__done = true;
+      openLetter(true);
+      party(180);
+    }
+  }
+  setInterval(tick, 250); tick();
+
+  // Letter toggle
+  function openLetter(force=false){
+    const box = $("#letterBox");
+    if(force) box.classList.add("show");
+    else box.classList.toggle("show");
+    if(box.classList.contains("show")) party(120);
+  }
+  $("#btnOpenLetter").addEventListener("click", ()=> openLetter(false));
+
+  // Timeline
+  $("#timelineBox").innerHTML = CONFIG.timeline.map(x => `
+    <div class="titem">
+      <div class="trow">
+        <div class="twhen">${x.when}</div>
+        <div class="twhat">${x.what}</div>
+      </div>
+    </div>
+  `).join("");
+
+  // Gallery + Modal
+  const galleryBox = $("#galleryBox");
+  for(let i=1;i<=CONFIG.galleryCount;i++){
+    const src = CONFIG.galleryPath(i);
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    const img = new Image();
+    img.alt = `gallery ${i}`;
+    img.src = src;
+    img.onerror = () => { tile.style.cursor="default"; tile.innerHTML=""; };
+    tile.appendChild(img);
+    tile.addEventListener("click", ()=>{
+      if(!img.complete || img.naturalWidth === 0) return;
+      $("#modalImg").src = src;
+      $("#modalTitle").textContent = `Image ${i}`;
+      $("#modal").classList.add("show");
+    });
+    galleryBox.appendChild(tile);
+  }
+  function closeModal(){ $("#modal").classList.remove("show"); $("#modalImg").src=""; }
+  $("#modalClose").addEventListener("click", closeModal);
+  $("#modal").addEventListener("click", (e)=>{ if(e.target.id==="modal") closeModal(); });
+  addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeModal(); });
+
+  // BGM (click to play/pause)
+  let audio=null, bgmOn=false;
+  function ensureAudio(){
+    if(audio) return;
+    audio = new Audio(CONFIG.bgmFile);
+    audio.loop = true;
+    audio.volume = 0.55;
+  }
+  $("#btnBgm").addEventListener("click", async ()=>{
+    ensureAudio();
+    try{
+      if(!bgmOn){
+        await audio.play();
+        bgmOn=true;
+        $("#btnBgm").textContent="⏸️ BGM";
+        party(70);
+      }else{
+        audio.pause();
+        bgmOn=false;
+        $("#btnBgm").textContent="🎵 BGM";
+      }
+    }catch(e){
+      alert("BGM 파일이 없거나 브라우저 정책으로 제한될 수 있어. docs/bgm.mp3가 있는지 확인해줘!");
+    }
+  });
+
+  // Confetti
+  const c = $("#confetti"), ctx = c.getContext("2d");
+  let CW=0, CH=0, pieces=[];
+  const rand=(a,b)=>a+Math.random()*(b-a);
+  function resizeC(){
+    CW = c.width = innerWidth * devicePixelRatio;
+    CH = c.height = innerHeight * devicePixelRatio;
+  }
+  addEventListener("resize", resizeC); resizeC();
+
+  function party(amount=140){
+    for(let i=0;i<amount;i++){
+      pieces.push({
+        x: rand(0,CW), y: rand(-CH*0.2, CH*0.2),
+        vx: rand(-1.9, 1.9) * devicePixelRatio,
+        vy: rand(2.2, 5.2) * devicePixelRatio,
+        r: rand(3, 7) * devicePixelRatio,
+        rot: rand(0, Math.PI), vr: rand(-0.14, 0.14),
+        life: rand(80, 170),
+        type: Math.random() < .6 ? "rect" : "dot"
+      });
+    }
+  }
+  $("#btnParty").addEventListener("click", ()=> party(200));
+
+  function drawConfetti(){
+    ctx.clearRect(0,0,CW,CH);
+    pieces = pieces.filter(p => p.life-- > 0 && p.y < CH + 40*devicePixelRatio);
+    for(const p of pieces){
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot);
+      const g = ctx.createLinearGradient(-p.r,0,p.r,0);
+      g.addColorStop(0, "rgba(255,116,216,.95)");
+      g.addColorStop(1, "rgba(122,233,255,.95)");
+      ctx.fillStyle = g;
+      if(p.type==="rect") ctx.fillRect(-p.r, -p.r/2, p.r*2, p.r);
+      else { ctx.beginPath(); ctx.arc(0,0,p.r*0.9,0,Math.PI*2); ctx.fill(); }
+      ctx.restore();
+    }
+    requestAnimationFrame(drawConfetti);
+  }
+  drawConfetti();
+
+  // Particle background
+  const fx = $("#fx"), fctx = fx.getContext("2d");
+  let FW=0, FH=0, P=[];
+  function resizeFx(){
+    FW = fx.width = innerWidth * devicePixelRatio;
+    FH = fx.height = innerHeight * devicePixelRatio;
+  }
+  addEventListener("resize", resizeFx); resizeFx();
+
+  const PCOUNT = Math.max(70, Math.min(160, Math.round(innerWidth/10)));
+  for(let i=0;i<PCOUNT;i++){
+    P.push({
+      x: rand(0,FW), y: rand(0,FH),
+      vx: rand(-.18,.18) * devicePixelRatio,
+      vy: rand(-.12,.12) * devicePixelRatio,
+      r: rand(.8, 2.2) * devicePixelRatio,
+      a: rand(.08, .22),
+    });
+  }
+  function drawFx(){
+    fctx.clearRect(0,0,FW,FH);
+    for(const p of P){
+      p.x += p.vx; p.y += p.vy;
+      if(p.x<0) p.x=FW; if(p.x>FW) p.x=0;
+      if(p.y<0) p.y=FH; if(p.y>FH) p.y=0;
+      fctx.fillStyle = `rgba(255,255,255,${p.a})`;
+      fctx.beginPath(); fctx.arc(p.x,p.y,p.r,0,Math.PI*2); fctx.fill();
+    }
+    requestAnimationFrame(drawFx);
+  }
+  drawFx();
+
+  // Easter egg: type "BUKI"
+  let seq = "";
+  addEventListener("keydown", (e)=>{
+    const ch = (e.key || "").toUpperCase();
+    if(ch.length !== 1) return;
+    seq = (seq + ch).slice(-8);
+    if(seq.endsWith("BUKI")){
+      party(260);
+      openLetter(true);
+      $("#kickerText").textContent = "🌟 Easter Egg Unlocked • You typed BUKI";
+    }
+  });
+</script>
+</body>
+</html>docs/index.html
